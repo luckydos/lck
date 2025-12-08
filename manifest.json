@@ -1,7 +1,7 @@
 {
 	"name": "Lunck Check",
 	"short_name": "LCK",
-	"description": "점심 식사 체크",
+	"description": "LCK",
 	"lang": "ko-KR",
 	"start_url": "/lck/",
 	"scope": "/lck/",
