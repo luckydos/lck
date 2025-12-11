@@ -37,7 +37,6 @@
 	<script>
 		// 탭(tab) 간격 들여쓰기 적용
 		function testApiFetch() {
-			// CORS 문제가 없는 더미 API 주소 (테스트용 가짜 게시물 데이터)
 			const apiUrl = 'https://jsonplaceholder.typicode.com/posts/1';
 			const statusElement = document.getElementById('status');
 			const resultElement = document.getElementById('result-data');
@@ -48,26 +47,32 @@
 			// Fetch API를 사용하여 외부 데이터 가져오기
 			fetch(apiUrl)
 			.then(response => {
-				// 응답 상태 확인
+				// 1. 요청 상태 확인 및 출력 (response 변수를 여기서 사용)
+				const statusCode = response.status;
+				
 				if (!response.ok) {
-					throw new Error('네트워크 응답 오류: ' + response.statusText);
+					statusElement.textContent = '❌ 요청 실패: 상태 코드 ' + statusCode + '. 네트워크 응답 오류: ' + response.statusText;
+					throw new Error('네트워크 응답 오류');
 				}
-				return response.json(); // 응답 본문을 JSON으로 파싱
+				
+				// 성공했을 경우 상태 출력
+				statusElement.textContent = '✅ 요청 성공: 상태 코드 ' + statusCode;
+
+				return response.json(); // 응답 본문을 JSON으로 파싱하여 다음 .then()으로 전달
 			})
 			.then(data => {
-				// 성공적으로 데이터를 받은 경우
-				statusElement.textContent = '✅ 요청 성공: 상태 코드 ' + response.status;
-				
-				// 받은 데이터를 웹접근성에 맞게 처리하는 로직은 서버 스크랩에서 주로 필요하므로,
-				// 여기서는 간단히 JSON 문자열로 출력합니다.
+				// 2. 파싱된 데이터 (data)를 처리
+				// JSON.stringify(data, null, 2)를 사용하여 예쁘게 출력
 				resultElement.textContent = JSON.stringify(data, null, 2);
 				
 			})
 			.catch(error => {
-				// 요청 실패 (네트워크 오류, CORS 차단 등)
-				statusElement.textContent = '❌ 요청 실패: ' + error.message;
-				resultElement.textContent = '오류가 발생했습니다. 브라우저 콘솔을 확인해 보세요.';
-				console.error("API Fetch Error:", error);
+				// 3. 이전 단계(then, fetch 등)에서 발생한 모든 오류를 처리
+				if (error.message !== '네트워크 응답 오류') {
+					statusElement.textContent = '❌ 요청 실패: ' + error.message;
+					resultElement.textContent = '오류가 발생했습니다. 브라우저 콘솔을 확인해 보세요.';
+					console.error("API Fetch Error:", error);
+				}
 			});
 		}
 	</script>
