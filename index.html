@@ -3,19 +3,73 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>LCK</title>
-	<link rel="manifest" href="./manifest.json">
-	<link rel="icon" href="./images/favicon.ico" type="image/x-icon">
-	<link rel="apple-touch-icon" sizes="180x180" href="./images/icon-180.png">
+	<title>API 통신 테스트 (GitHub Pages)</title>
 	<style>
-		body, html {
-			margin: 0;
-			padding: 0;
-			height: 100%;
-			overflow: hidden;
+		body { font-family: sans-serif; padding: 20px; }
+		.container { max-width: 600px; margin: 0 auto; }
+		h3.tit1 { color: #333; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+		h4.tit2 { color: #555; margin-top: 20px; }
+		.result-box {
+			background-color: #f4f4f4;
+			border: 1px solid #ddd;
+			padding: 15px;
+			margin-top: 10px;
+			white-space: pre-wrap;
+			word-break: break-all;
+			min-height: 100px;
+		}
 	</style>
 </head>
 <body>
-	<h3>LCK Index Page</h3>
+	<div class="container">
+		<h3 class="tit1">✅ GitHub Pages API 통신 테스트</h3>
+		<p>아래 버튼을 클릭하여 외부 테스트 API 서버로부터 데이터를 가져옵니다.</p>
+
+		<button onclick="testApiFetch()">테스트 API 요청 시작</button>
+
+		<h4 class="tit2">요청 상태</h4>
+		<div id="status" class="result-box">대기 중...</div>
+
+		<h4 class="tit2">수신 데이터 (최신 게시물 1개 가정)</h4>
+		<div id="result-data" class="result-box"></div>
+	</div>
+
+	<script>
+		// 탭(tab) 간격 들여쓰기 적용
+		function testApiFetch() {
+			// CORS 문제가 없는 더미 API 주소 (테스트용 가짜 게시물 데이터)
+			const apiUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+			const statusElement = document.getElementById('status');
+			const resultElement = document.getElementById('result-data');
+			
+			statusElement.textContent = 'API (' + apiUrl + ')에 요청 중...';
+			resultElement.textContent = '데이터를 기다리는 중...';
+
+			// Fetch API를 사용하여 외부 데이터 가져오기
+			fetch(apiUrl)
+			.then(response => {
+				// 응답 상태 확인
+				if (!response.ok) {
+					throw new Error('네트워크 응답 오류: ' + response.statusText);
+				}
+				return response.json(); // 응답 본문을 JSON으로 파싱
+			})
+			.then(data => {
+				// 성공적으로 데이터를 받은 경우
+				statusElement.textContent = '✅ 요청 성공: 상태 코드 ' + response.status;
+				
+				// 받은 데이터를 웹접근성에 맞게 처리하는 로직은 서버 스크랩에서 주로 필요하므로,
+				// 여기서는 간단히 JSON 문자열로 출력합니다.
+				resultElement.textContent = JSON.stringify(data, null, 2);
+				
+			})
+			.catch(error => {
+				// 요청 실패 (네트워크 오류, CORS 차단 등)
+				statusElement.textContent = '❌ 요청 실패: ' + error.message;
+				resultElement.textContent = '오류가 발생했습니다. 브라우저 콘솔을 확인해 보세요.';
+				console.error("API Fetch Error:", error);
+			});
+		}
+	</script>
 </body>
 </html>
